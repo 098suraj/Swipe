@@ -72,6 +72,7 @@ dependencies {
 
     // Architectural Components
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
 
@@ -87,12 +88,12 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.navigation.fragment)
+    implementation (libs.androidx.hilt.navigation.compose)
     kapt(libs.hilt.android.compiler)
 
-    // Navigation Components Fragment
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
+    // Compose Navigation
+    implementation(libs.androidx.navigation.compose)
+
 
     // Paging
     implementation(libs.androidx.paging.runtime)
@@ -102,5 +103,5 @@ dependencies {
     implementation(libs.lottie.compose)
 
 
-
+    implementation(libs.coil.compose)
 }
