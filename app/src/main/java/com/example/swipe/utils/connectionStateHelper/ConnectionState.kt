@@ -7,4 +7,6 @@ package com.example.swipe.utils.connectionStateHelper
 sealed class ConnectionState {
     data object Available : ConnectionState()
     data object Unavailable : ConnectionState()
+
+    data object Empty : ConnectionState()
 }

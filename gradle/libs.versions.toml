@@ -6,11 +6,11 @@ coreKtx = "1.13.1"
 hiltNavigationCompose = "1.2.0"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-lifecycleRuntimeCompose = "2.6.2"
+lifecycleRuntimeCompose = "2.8.0"
 lifecycleRuntimeKtx = "2.8.0"
 activityCompose = "1.9.0"
 composeBom = "2024.05.00"
-androidx-lifecycle-viewmodel-ktx = "2.7.0"
+androidx-lifecycle-viewmodel-ktx = "2.8.0"
 hilt-android = "2.50"
 hilt-android-compiler = "2.50"
 kotlin = "1.9.23"
@@ -19,11 +19,13 @@ appcompat = "1.6.1"
 kotlinx-coroutines-core = "1.8.0"
 logging-interceptor = "4.11.0"
 lottie = "6.4.0"
-navigation-fragment-ktx = "2.7.7"
-navigationCompose = "2.7.7"
+material = "1.12.0"
+navigationCompose = "2.8.0-beta01"
 paging = "3.3.0"
+rebugger = "1.0.0-rc03"
 retrofit = "2.9.0"
 constraintlayoutCompose = "1.0.1"
+runtimeZ = "1.7.0-beta01"
 
 [libraries]
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
@@ -57,6 +59,8 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "logging-interceptor" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie"  }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+rebugger = { module = "io.github.theapache64:rebugger", version.ref = "rebugger" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 
 [plugins]

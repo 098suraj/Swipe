@@ -1,8 +1,10 @@
 package com.example.swipe.presentation.searchScreen
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
+import com.example.swipe.R
 import com.example.swipe.datamodels.ProductListItem
-import com.example.swipe.presentation.baseViewState.ScreenError
 import com.example.swipe.presentation.baseViewState.ScreenState
 import com.example.swipe.presentation.coreBase.ComposeBaseViewModel
 import com.example.swipe.usecase.ProductUseCase
@@ -16,73 +18,98 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(private val productUseCase: ProductUseCase) :
     ComposeBaseViewModel<SearchScreenState, Nothing>() {
-
-    fun updateSearchQuery(query: String) {
-        val currentScreenData = getCurrentState().data
-        setScreenState(
-            getCurrentState().copy(data = currentScreenData?.copy(searchText = query))
-        )
-        searchItem(query)
-    }
-
-    init {
-        fetchItems()
-    }
-
-    private fun fetchItems() {
-        viewModelScope.launch(Dispatchers.IO) {
-            productUseCase.fetchProductList().collectLatest { data ->
-                when (data) {
+    fun fetchItems() {
+        viewModelScope.launch {
+            productUseCase.fetchProductList().collectLatest { resourceState ->
+                when (resourceState) {
                     is ResourceState.Error -> {
-                        setScreenState(
-                            getCurrentState().copy(
-                                isLoading = false,
-                                error = ScreenError("Something went Wrong")
-                            )
-                        )
+                        setErrorState(message = R.string.something_went_wrong, icon = R.drawable.ic_empty_favourites)
                     }
 
                     is ResourceState.Loading -> {
-                        setScreenState(getCurrentState().copy(isLoading = true, error = null))
+                        setLoadingState()
                     }
 
                     is ResourceState.Success -> {
-                        val currentData = getCurrentState().data
-                        setScreenState(
-                            getCurrentState().copy(
-                                isLoading = false,
-                                error = null,
-                                data = currentData?.copy(dataList = data.data)
+                        if (resourceState.data != null) {
+                            setScreenState(
+                                getCurrentState().copy(
+                                    isLoading = false,
+                                    error = null,
+                                    data = SearchScreenState.SuccessState(dataList = resourceState.data)
+                                )
                             )
-                        )
+                        } else {
+                            setScreenState(
+                                getCurrentState().copy(
+                                    isLoading = false,
+                                    error = null,
+                                    data = SearchScreenState.EmptyState(
+                                        icon = R.drawable.ic_empty_feed,
+                                        textPrimary = R.string.nothing_found,
+                                        textSecondary = R.string.text_search_holder_secondary,
+                                        actionStringRes = 0,
+                                    )
+                                )
+                            )
+                        }
                     }
                 }
             }
         }
     }
 
-     fun searchItem(query: String) {
+    fun searchItem(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val filteredList = getCurrentState().data?.dataList?.filter {
-                it.product_name.contains(
-                    query,
-                    ignoreCase = true
-                )
+            val item = getCurrentState().data is SearchScreenState.SuccessState
+            if (item) {
+                val data = getCurrentState().data as SearchScreenState.SuccessState
+                val filteredList = data.dataList?.filter {
+                    it.product_name.contains(
+                        query,
+                        ignoreCase = true
+                    )
+                }
+                if (filteredList.isNullOrEmpty()) {
+                    setScreenState(
+                        getCurrentState().copy(
+                            error = null,
+                            data = SearchScreenState.EmptyState(
+                                icon = R.drawable.ic_empty_feed,
+                                textPrimary = R.string.nothing_found,
+                                textSecondary = R.string.text_search_holder_secondary,
+                                actionStringRes = 0,
+                            )
+                        )
+                    )
+                } else {
+                    setScreenState(
+                        getCurrentState().copy(error = null,data = SearchScreenState.SuccessState(filteredList))
+                    )
+                }
+
             }
-            val currentScreenData = getCurrentState().data
-            setScreenState(
-                getCurrentState().copy(data = currentScreenData?.copy(dataList = filteredList))
-            )
         }
     }
 
     override fun getInitialState(): ScreenState<SearchScreenState> {
-        return ScreenState(isLoading = true)
+        return ScreenState(isLoading = true, data = null)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        setScreenState(getCurrentState().copy(isLoading = true, data = null))
     }
 
 }
 
-data class SearchScreenState(
-    val searchText: String? = "",
-    val dataList: List<ProductListItem>?
-)
+sealed class SearchScreenState {
+    data class SuccessState(val dataList: List<ProductListItem>) : SearchScreenState()
+    data class EmptyState(
+        @DrawableRes val icon: Int,
+        @StringRes val textPrimary: Int,
+        @StringRes val textSecondary: Int,
+        @StringRes val actionStringRes: Int,
+    ) : SearchScreenState()
+}
+

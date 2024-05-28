@@ -18,8 +18,8 @@ import javax.inject.Inject
  */
 
 class ProductServiceRepositoryImpl @Inject constructor(val swipeProductApiService: SwipeProductApiService) : ProductServiceRepository {
-    override suspend fun getSwipeProductList(): PagingSource<Int, ProductListItem> {
-      return SwipePagingSource(swipeProductApiService = swipeProductApiService)
+    override fun getSwipeProductListPagingSource(): PagingSource<Int, ProductListItem> {
+        return SwipePagingSource(swipeProductApiService = swipeProductApiService)
     }
 
     override suspend fun getProductList(): ProductList {

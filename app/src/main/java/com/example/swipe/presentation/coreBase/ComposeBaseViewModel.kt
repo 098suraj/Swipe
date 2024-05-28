@@ -1,5 +1,7 @@
 package com.example.swipe.presentation.coreBase
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.swipe.presentation.baseViewState.ScreenError
@@ -46,17 +48,17 @@ abstract class ComposeBaseViewModel<T, U> : ViewModel() {
         }
     }
 
-    fun setErrorState(message: String?) {
+    fun setErrorState(@StringRes message: Int,@DrawableRes icon:Int) {
         _uiState.update {
             getCurrentState().copy(
                 isLoading = false,
-                error = ScreenError(message = message ?: "")
+                error = ScreenError(message = message, icon = icon)
             )
         }
     }
 
     fun setScreenState(state: ScreenState<T>) {
-        _uiState.value = state
+        _uiState.update { state }
     }
 
     fun getCurrentState(): ScreenState<T> {

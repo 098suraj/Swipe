@@ -1,5 +1,6 @@
 package com.example.swipe.usecase
 
+import android.util.Log
 import androidx.paging.PagingSource
 import com.example.swipe.data.repository.ProductServiceRepository
 import com.example.swipe.datamodels.AddProduct
@@ -14,18 +15,9 @@ import javax.inject.Inject
 class ProductUseCase @Inject constructor(private val repository: ProductServiceRepository) {
 
     /**
-     * Fetches a paginated list of products.
+     * Fetches a PagingSource of products.
      */
-    suspend fun fetchPaginatedProductList(): Flow<ResourceState<PagingSource<Int, ProductListItem>>> = flow {
-        try {
-            emit(ResourceState.Loading())
-            val response = repository.getSwipeProductList()
-            emit(ResourceState.Success(response))
-        } catch (e: Exception){
-            e.printStackTrace()
-            emit(ResourceState.Error(message = e.localizedMessage ?: "An unexpected error occurred in fetching products list"))
-        }
-    }
+    fun fetchPaginatedProductListPagingSource() = repository.getSwipeProductListPagingSource()
 
     /**
      * Fetches a list of products.

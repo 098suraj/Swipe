@@ -69,6 +69,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation (libs.androidx.constraintlayout.compose)
+    implementation (libs.material)
+
 
     // Architectural Components
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -104,4 +106,6 @@ dependencies {
 
 
     implementation(libs.coil.compose)
+
+    implementation(libs.rebugger)
 }

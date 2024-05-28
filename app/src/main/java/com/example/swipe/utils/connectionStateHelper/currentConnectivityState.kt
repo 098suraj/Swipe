@@ -6,9 +6,16 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import com.example.swipe.ui.theme.LocalNetworkStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -22,8 +29,7 @@ import kotlinx.coroutines.withContext
  */
 val Context.connectivityStatus: ConnectionState
     get() {
-        val connectivityManager =
-            getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         return getCurrentConnectivityState(connectivityManager)
     }
 
@@ -32,10 +38,7 @@ val Context.connectivityStatus: ConnectionState
  * Reusable network utility function to get current state of internet connection based on connectivity manager
  */
 private fun getCurrentConnectivityState(connectivityManager: ConnectivityManager?): ConnectionState {
-    val state = connectivityManager?.allNetworks?.any {
-        connectivityManager.getNetworkCapabilities(it)
-            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false
-    } ?: false
+    val state = connectivityManager?.allNetworks?.any { connectivityManager.getNetworkCapabilities(it)?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false } ?: false
     return if (state) ConnectionState.Available else ConnectionState.Unavailable
 }
 
@@ -86,17 +89,18 @@ fun Context.observeCurrentConnectivityStatus() = callbackFlow<ConnectionState> {
 
 // compose based connectivity observer // produce state can be used as alternative of this composable
 @Composable
-fun ObserveCurrentConnectivityStatus(
-    onNetworkChanged: (ConnectionState) -> Unit
+fun ProvideCurrentConnectivityStatus(
+    content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    var currentConnectionState by remember { mutableStateOf<ConnectionState>(context.connectivityStatus) }
+
     DisposableEffect(key1 = context.connectivityStatus) {
         // connectivity manager for network utilities
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         // Call back function which gives has object of NetworkCallback and returns a type of ConnectionState -> Available or Unavailable
-        val callback = NetworkCallback { connectionState -> onNetworkChanged(connectionState) }
+        val callback = NetworkCallback { connectionState -> currentConnectionState = connectionState }
 
         val networkRequest = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
@@ -127,7 +131,7 @@ fun ObserveCurrentConnectivityStatus(
 
         // Set current state
         val currentState = getCurrentConnectivityState(connectivityManager)
-        onNetworkChanged(currentState)
+        currentConnectionState = currentState
 
         onDispose {
             // using dispatchers to avoid binder call on main thread
@@ -138,6 +142,11 @@ fun ObserveCurrentConnectivityStatus(
             }
         }
     }
+
+    CompositionLocalProvider(
+        value = LocalNetworkStatus provides currentConnectionState,
+        content = content,
+    )
 }
 
 // Network CallBack which gives call network state call backs

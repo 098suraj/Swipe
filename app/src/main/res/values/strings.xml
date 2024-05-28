@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Swipe</string>
+    <string name="nothing_found">Nothing found</string>
+    <string name="text_search_holder_secondary">Try to reformulate the query.</string>
+    <string name= "something_went_wrong">"Something went wrong"</string>
+    <string name= "nothing_here">"Nothing Here!"</string>
+    <string name= "no_data_available">"Empty feed"</string>
 </resources>

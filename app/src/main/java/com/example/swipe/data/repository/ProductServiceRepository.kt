@@ -8,10 +8,10 @@ import com.example.swipe.datamodels.ProductListItem
 
 interface ProductServiceRepository {
     /**
-     * Retrieves a paginated list of swipe products.
+     * Retrieves a PagingSource of paginated list of swipe products.
      * @return PagingSource<Int, ProductListItem>: The paginated list of swipe products.
      */
-    suspend fun getSwipeProductList(): PagingSource<Int, ProductListItem>
+    fun getSwipeProductListPagingSource(): PagingSource<Int, ProductListItem>
 
     /**
      * Retrieves a list of products.

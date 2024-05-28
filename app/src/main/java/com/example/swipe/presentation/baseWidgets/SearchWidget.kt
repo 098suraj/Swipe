@@ -1,54 +1,69 @@
-package com.example.swipe.presentation.searchScreen
+package com.example.swipe.presentation.baseWidgets
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchWidget(
-    text: String,
     onTextChange: (String) -> Unit,
     onSearchClicked: (String) -> Unit,
     onCloseClicked: () -> Unit
 ) {
+    var text by remember {
+        mutableStateOf("")
+    }
     Surface(
+        shape =  SearchBarDefaults.dockedShape,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        tonalElevation = 6.dp,
+        shadowElevation = 0.dp,
         modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .semantics {
-                contentDescription = "SearchWidget"
-            },
-         tonalElevation = 4.dp,
-        color = MaterialTheme.colorScheme.primaryContainer
+            .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(), start = 6.dp, end = 6.dp, bottom = 6.dp)
+            .zIndex(1f)
+            .width(360.dp)
     ) {
+        val keyboardController = LocalSoftwareKeyboardController.current
         TextField(
             modifier = Modifier
-                .fillMaxWidth()
-                .semantics {
-                    contentDescription = "TextField"
-                },
+                .fillMaxWidth(),
             value = text,
-            onValueChange = { onTextChange(it) },
+            onValueChange = {
+                text = it
+                onTextChange(it)
+            },
             placeholder = {
                 Text(
                     modifier = Modifier.alpha(alpha = 0.5f),
@@ -70,13 +85,10 @@ fun SearchWidget(
             },
             trailingIcon = {
                 IconButton(
-                    modifier = Modifier
-                        .semantics {
-                            contentDescription = "CloseButton"
-                        },
+                    modifier = Modifier,
                     onClick = {
                         if (text.isNotEmpty()) {
-                            onTextChange("")
+                            text = ""
                         } else {
                             onCloseClicked()
                         }
@@ -94,20 +106,21 @@ fun SearchWidget(
             keyboardActions = KeyboardActions(
                 onSearch = {
                     onSearchClicked(text)
+                    keyboardController?.hide()
                 }
             ),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
                 cursorColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
+                focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedLeadingIconColor = MaterialTheme.colorScheme.tertiary ,
+                focusedLeadingIconColor = MaterialTheme.colorScheme.tertiary,
                 unfocusedLeadingIconColor = MaterialTheme.colorScheme.tertiary,
                 focusedTrailingIconColor = MaterialTheme.colorScheme.tertiary,
                 unfocusedTrailingIconColor = MaterialTheme.colorScheme.tertiary,
                 focusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                unfocusedTextColor =  MaterialTheme.colorScheme.onSecondaryContainer,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
             )
         )
     }
@@ -117,7 +130,6 @@ fun SearchWidget(
 @Preview
 fun SearchWidgetPreview() {
     SearchWidget(
-        text = "Search",
         onTextChange = {},
         onSearchClicked = {},
         onCloseClicked = {}
