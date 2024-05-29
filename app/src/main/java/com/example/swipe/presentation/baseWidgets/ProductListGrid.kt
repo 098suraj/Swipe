@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
-import com.theapache64.rebugger.Rebugger
 import com.example.swipe.datamodels.ProductListItem
 
 /**
