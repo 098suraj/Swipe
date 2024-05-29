@@ -4,7 +4,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.example.swipe.R
-import com.example.swipe.datamodels.ProductList
 import com.example.swipe.datamodels.ProductListItem
 import com.example.swipe.presentation.baseViewState.ScreenState
 import com.example.swipe.presentation.coreBase.ComposeBaseViewModel
@@ -40,9 +39,10 @@ class SearchViewModel @Inject constructor(private val productUseCase: ProductUse
                 when (resourceState) {
                     is ResourceState.Error ->
                         setErrorState(
-                        message = R.string.something_went_wrong,
-                        icon = R.drawable.ic_empty_favourites
-                    )
+                            message = R.string.something_went_wrong,
+                            icon = R.drawable.ic_empty_favourites
+                        )
+
                     is ResourceState.Loading -> setLoadingState()
                     is ResourceState.Success -> handleSuccessState(resourceState.data)
                 }
@@ -94,7 +94,7 @@ class SearchViewModel @Inject constructor(private val productUseCase: ProductUse
             val item = getCurrentState().data is SearchScreenState.SuccessState
             if (item) {
                 val data = getCurrentState().data as SearchScreenState.SuccessState
-                val filteredList = data.dataList?.filter {
+                val filteredList = data.dataList.filter {
                     it.product_name.contains(
                         query,
                         ignoreCase = true

@@ -17,28 +17,29 @@ import javax.inject.Inject
  * This layer can easily be swapped out with other implementation and helps in testing as well.
  */
 
-class ProductServiceRepositoryImpl @Inject constructor(private val swipeProductApiService: SwipeProductApiService) : ProductServiceRepository {
+class ProductServiceRepositoryImpl @Inject constructor(private val swipeProductApiService: SwipeProductApiService) :
+    ProductServiceRepository {
     override fun getSwipeProductListPagingSource(): PagingSource<Int, ProductListItem> {
         return SwipePagingSource(swipeProductApiService = swipeProductApiService)
     }
 
     override suspend fun getProductList(): ProductList {
-      return swipeProductApiService.getSwipeProductList()
+        return swipeProductApiService.getSwipeProductList()
     }
 
     override suspend fun sendProductDetails(product: AddProduct): AddProductResponse {
-      return swipeProductApiService.sendProductDetails(
-          productName = product.productName.toRequestBody(),
-          productType = product.productType.toRequestBody(),
-          price = product.price.toString().toRequestBody(),
-          tax = product.tax.toString().toRequestBody(),
-          files = product.files?.asRequestBody("image/*".toMediaTypeOrNull())?.let {
-              MultipartBody.Part.createFormData(
-                  "files[]",
-                  product.files?.name,
-                  it
-              )
-          }
-      )
+        return swipeProductApiService.sendProductDetails(
+            productName = product.productName.toRequestBody(),
+            productType = product.productType.toRequestBody(),
+            price = product.price.toString().toRequestBody(),
+            tax = product.tax.toString().toRequestBody(),
+            files = product.files?.asRequestBody("image/*".toMediaTypeOrNull())?.let {
+                MultipartBody.Part.createFormData(
+                    "files[]",
+                    product.files.name,
+                    it
+                )
+            }
+        )
     }
 }

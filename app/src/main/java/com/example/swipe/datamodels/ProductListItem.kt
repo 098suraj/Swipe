@@ -2,7 +2,6 @@ package com.example.swipe.datamodels
 
 import androidx.compose.runtime.Immutable
 import java.util.UUID
-import java.util.concurrent.atomic.AtomicLong
 
 @Immutable
 data class ProductListItem(

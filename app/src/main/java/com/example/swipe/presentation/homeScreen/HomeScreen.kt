@@ -84,10 +84,12 @@ fun HomeScreen(
             productPagingItem = productPagingItem
         )
 
-        if (showBottomSheet){
+        if (showBottomSheet) {
             AddProductBottomSheet(
-                modifier = Modifier.navigationBarsPadding().padding(bottom = 30.dp),
-                onDismissRequest = { showBottomSheet = false  },
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .padding(bottom = 30.dp),
+                onDismissRequest = { showBottomSheet = false },
                 invalidatedCallback = {
                     viewModel.invalidateData()
                 }
@@ -119,7 +121,7 @@ fun HomeScreenContentHost(
             loadState.prepend !is LoadState.Loading &&
             loadState.append !is LoadState.Loading
 
-    if (!finishedLoading){
+    if (!finishedLoading) {
         Box(modifier = modifier.fillMaxSize()) {
             LoadingAnimation(
                 modifier = Modifier

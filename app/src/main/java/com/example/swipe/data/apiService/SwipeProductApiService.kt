@@ -16,7 +16,7 @@ interface SwipeProductApiService {
      * @return ProductList: The list of swipe products.
      */
     @GET("api/public/get")
-    suspend fun getSwipeProductList() : ProductList
+    suspend fun getSwipeProductList(): ProductList
 
     /**
      * Sends product details to the API for addition.
@@ -35,5 +35,5 @@ interface SwipeProductApiService {
         @Part("price") price: RequestBody,
         @Part("tax") tax: RequestBody,
         @Part files: MultipartBody.Part?,
-    ) : AddProductResponse
+    ): AddProductResponse
 }

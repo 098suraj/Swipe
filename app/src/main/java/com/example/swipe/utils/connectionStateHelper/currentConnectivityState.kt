@@ -8,7 +8,6 @@ import android.net.NetworkRequest
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,7 +28,8 @@ import kotlinx.coroutines.withContext
  */
 val Context.connectivityStatus: ConnectionState
     get() {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         return getCurrentConnectivityState(connectivityManager)
     }
 
@@ -38,7 +38,10 @@ val Context.connectivityStatus: ConnectionState
  * Reusable network utility function to get current state of internet connection based on connectivity manager
  */
 private fun getCurrentConnectivityState(connectivityManager: ConnectivityManager?): ConnectionState {
-    val state = connectivityManager?.allNetworks?.any { connectivityManager.getNetworkCapabilities(it)?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false } ?: false
+    val state = connectivityManager?.allNetworks?.any {
+        connectivityManager.getNetworkCapabilities(it)
+            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false
+    } ?: false
     return if (state) ConnectionState.Available else ConnectionState.Unavailable
 }
 
@@ -83,7 +86,7 @@ fun Context.observeCurrentConnectivityStatus() = callbackFlow<ConnectionState> {
         //unregister the callbacks with unregisterNetworkCallback(ConnectivityManager.NetworkCallback).
         connectivityManager?.unregisterNetworkCallback(callback)
     }
-} .distinctUntilChanged()
+}.distinctUntilChanged()
     .flowOn(Dispatchers.IO)
 
 
@@ -98,9 +101,11 @@ fun ProvideCurrentConnectivityStatus(
 
     DisposableEffect(key1 = context.connectivityStatus) {
         // connectivity manager for network utilities
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         // Call back function which gives has object of NetworkCallback and returns a type of ConnectionState -> Available or Unavailable
-        val callback = NetworkCallback { connectionState -> currentConnectionState = connectionState }
+        val callback =
+            NetworkCallback { connectionState -> currentConnectionState = connectionState }
 
         val networkRequest = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)

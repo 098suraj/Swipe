@@ -1,4 +1,5 @@
 package com.example.swipe.presentation.baseViewState
+
 /**
  * A data class that represents the state of a screen in a composable UI.
  *

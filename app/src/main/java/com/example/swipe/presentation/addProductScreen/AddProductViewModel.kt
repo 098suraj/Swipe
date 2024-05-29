@@ -1,19 +1,13 @@
 package com.example.swipe.presentation.addProductScreen
 
 import android.net.Uri
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.swipe.datamodels.AddProduct
-import com.example.swipe.datamodels.AddProductResponse
-import com.example.swipe.datamodels.ProductType
 import com.example.swipe.datamodels.productTypeList
 import com.example.swipe.presentation.baseViewState.ScreenState
 import com.example.swipe.presentation.coreBase.ComposeBaseViewModel
 import com.example.swipe.usecase.ProductUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -23,9 +17,10 @@ import javax.inject.Inject
  * @param productUsecase: The use case responsible for product-related operations.
  */
 @HiltViewModel
-class AddProductViewModel @Inject constructor(private val productUsecase: ProductUseCase) : ComposeBaseViewModel<AddProductUiState, Nothing>() {
+class AddProductViewModel @Inject constructor(private val productUsecase: ProductUseCase) :
+    ComposeBaseViewModel<AddProductUiState, Nothing>() {
 
-    fun hideLoad () {
+    fun hideLoad() {
         setScreenState(ScreenState(isLoading = false, data = AddProductUiState()))
     }
 
@@ -90,33 +85,42 @@ class AddProductViewModel @Inject constructor(private val productUsecase: Produc
      * @param imageUri Image URI to be displayed.
      */
     fun onImageSelected(files: File?, imageUri: Uri?) {
-        updateUiState { it.copy(isDropDownMenuExpanded = false, files = files, imageUri = imageUri) }
+        updateUiState {
+            it.copy(
+                isDropDownMenuExpanded = false,
+                files = files,
+                imageUri = imageUri
+            )
+        }
     }
 
 
     /**
      * Validates all the field and enables submit button.
      */
-    private fun validateFieldsAndEnableSubmitButton(){
-        val data = getCurrentState().data?: return
-        val isSubmitButtonEnabled =data.productName.isNotBlank() && data.tax.isNotBlank() && data.selectedProductItem.isNotBlank() && data.imageUri != null
-        if (data.isSubmitButtonEnabled != isSubmitButtonEnabled){
-            setScreenState(getCurrentState().copy(
-                data = data.copy(isSubmitButtonEnabled = isSubmitButtonEnabled)
-            ))
+    private fun validateFieldsAndEnableSubmitButton() {
+        val data = getCurrentState().data ?: return
+        val isSubmitButtonEnabled =
+            data.productName.isNotBlank() && data.tax.isNotBlank() && data.selectedProductItem.isNotBlank() && data.imageUri != null
+        if (data.isSubmitButtonEnabled != isSubmitButtonEnabled) {
+            setScreenState(
+                getCurrentState().copy(
+                    data = data.copy(isSubmitButtonEnabled = isSubmitButtonEnabled)
+                )
+            )
         }
     }
 
     /**
      * Submits Product and screen state -> Loading.
      */
-    fun onSubmitClicked(){
-        val data = getCurrentState().data?: return
-        val addProduct =  AddProduct(
+    fun onSubmitClicked() {
+        val data = getCurrentState().data ?: return
+        val addProduct = AddProduct(
             productName = data.productName,
-            price = data.price.toDouble() ,
+            price = data.price.toDouble(),
             productType = data.selectedProductItem,
-            tax = data.tax.toDouble() ,
+            tax = data.tax.toDouble(),
             files = data.files,
         )
         setScreenState(getCurrentState().copy(isLoading = true, data = data))
@@ -149,11 +153,12 @@ class AddProductViewModel @Inject constructor(private val productUsecase: Produc
         setScreenState(getCurrentState().copy(data = data?.let(transform)))
         validateFieldsAndEnableSubmitButton()
     }
+
     /**
      * initial screen state
      */
     override fun getInitialState(): ScreenState<AddProductUiState> {
-        return ScreenState(isLoading=true, error=null, data= AddProductUiState())
+        return ScreenState(isLoading = true, error = null, data = AddProductUiState())
 
     }
 
@@ -181,7 +186,7 @@ class AddProductViewModel @Inject constructor(private val productUsecase: Produc
  * @property imageUri An optional URI pointing to the image associated with the product.
  */
 data class AddProductUiState(
-    val dismissSheet:Boolean = false,
+    val dismissSheet: Boolean = false,
     val isSubmitButtonEnabled: Boolean = false,
     val selectedProductItem: String = productTypeList[0],
     val productName: String = "",

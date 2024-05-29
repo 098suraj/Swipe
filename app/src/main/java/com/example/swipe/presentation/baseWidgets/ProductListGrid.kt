@@ -15,11 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeightIn
-import androidx.compose.foundation.layout.requiredWidthIn
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -29,7 +25,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -71,6 +66,7 @@ fun ProductGridHost(
     }
 
 }
+
 /**
  * Base composable function for creating a staggered grid layout for displaying product items.
  *
@@ -123,10 +119,12 @@ fun ProductListGrid(
         BaseProductItemGrid(modifier = Modifier.fillMaxSize()) {
             items(productItemList, key = { it.key }) {
                 SharedProductItemAnimatedVisibility(
-                    modifier = Modifier.animateItem().fillMaxSize(),
+                    modifier = Modifier
+                        .animateItem()
+                        .fillMaxSize(),
                     productListItem = it,
                     sharedTransitionScope = this@SharedTransitionLayout,
-                    onClick = {selectedProduct = it}
+                    onClick = { selectedProduct = it }
                 )
             }
         }
@@ -164,10 +162,12 @@ fun ProductPagingGrid(
             ) {
                 productPagingItem[it]?.let { productListItem ->
                     SharedProductItemAnimatedVisibility(
-                        modifier = Modifier.animateItem().fillMaxSize(),
+                        modifier = Modifier
+                            .animateItem()
+                            .fillMaxSize(),
                         productListItem = productListItem,
                         sharedTransitionScope = this@SharedTransitionLayout,
-                        onClick = {selectedProduct = productListItem}
+                        onClick = { selectedProduct = productListItem }
                     )
                 }
             }
@@ -185,7 +185,6 @@ fun ProductPagingGrid(
         )
     }
 }
-
 
 
 /**

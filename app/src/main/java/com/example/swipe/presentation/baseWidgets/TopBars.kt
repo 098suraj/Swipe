@@ -10,7 +10,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -82,11 +81,10 @@ fun HomeTopBar(
 }
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchWidgetTopBar(
-    modifier: Modifier =Modifier,
+    modifier: Modifier = Modifier,
     onTextChange: (String) -> Unit,
     onSearchClicked: (String) -> Unit,
     onCloseClicked: () -> Unit
@@ -101,7 +99,14 @@ fun SearchWidgetTopBar(
         tonalElevation = 6.dp,
         shadowElevation = 0.dp,
         modifier = modifier
-            .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(), start = 6.dp, end = 6.dp, bottom = 6.dp)
+            .padding(
+                top = WindowInsets.statusBars
+                    .asPaddingValues()
+                    .calculateTopPadding(),
+                start = 6.dp,
+                end = 6.dp,
+                bottom = 6.dp
+            )
             .zIndex(1f)
             .width(360.dp)
     ) {

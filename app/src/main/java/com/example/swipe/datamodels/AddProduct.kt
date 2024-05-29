@@ -2,6 +2,7 @@ package com.example.swipe.datamodels
 
 import androidx.compose.runtime.Immutable
 import java.io.File
+
 @Immutable
 data class AddProduct(
     val productName: String,

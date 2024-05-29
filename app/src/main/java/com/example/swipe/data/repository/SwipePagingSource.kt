@@ -6,7 +6,8 @@ import com.example.swipe.data.apiService.SwipeProductApiService
 import com.example.swipe.datamodels.ProductListItem
 import javax.inject.Inject
 
-class SwipePagingSource @Inject constructor(val swipeProductApiService: SwipeProductApiService): PagingSource<Int, ProductListItem>() {
+class SwipePagingSource @Inject constructor(val swipeProductApiService: SwipeProductApiService) :
+    PagingSource<Int, ProductListItem>() {
 
     /**
      * Retrieves the refresh key for the current paging state, based on the current view port
@@ -19,11 +20,11 @@ class SwipePagingSource @Inject constructor(val swipeProductApiService: SwipePro
      */
 
 
-
     override fun getRefreshKey(state: PagingState<Int, ProductListItem>): Int {
-       return state.anchorPosition?.let {
-            state.closestPageToPosition(it)?.nextKey?.minus(1)?: state.closestPageToPosition(it)?.prevKey?.plus(1)
-        }?:1
+        return state.anchorPosition?.let {
+            state.closestPageToPosition(it)?.nextKey?.minus(1)
+                ?: state.closestPageToPosition(it)?.prevKey?.plus(1)
+        } ?: 1
     }
 
     /**
@@ -41,10 +42,10 @@ class SwipePagingSource @Inject constructor(val swipeProductApiService: SwipePro
 
             LoadResult.Page(
                 data = response,
-                prevKey = if (page == 1) null else page-1,
-                nextKey = if (response.isNullOrEmpty() || (page*params.loadSize) >= response.size) null else page+1
+                prevKey = if (page == 1) null else page - 1,
+                nextKey = if (response.isNullOrEmpty() || (page * params.loadSize) >= response.size) null else page + 1
             )
-        } catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             LoadResult.Error(e)
         }

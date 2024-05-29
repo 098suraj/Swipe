@@ -46,7 +46,7 @@ fun SearchScreen(
                 onCloseClicked = dropUnlessResumed { navController.popBackStack() }
             )
         }
-    ) { innerPadding->
+    ) { innerPadding ->
         SearchScreenContentHost(
             modifier = modifier.padding(innerPadding),
             uiState = uiState

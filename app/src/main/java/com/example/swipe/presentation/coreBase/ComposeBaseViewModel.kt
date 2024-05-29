@@ -31,6 +31,7 @@ abstract class ComposeBaseViewModel<T, U> : ViewModel() {
     private val _uiState: MutableStateFlow<ScreenState<T>> by lazy {
         MutableStateFlow(ScreenState(isLoading = true, data = null))
     }
+
     // Mutable shared flow for emitting UI actions
     val uiState: StateFlow<ScreenState<T>> by lazy {
         _uiState.asStateFlow()

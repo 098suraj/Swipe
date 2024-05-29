@@ -2,6 +2,7 @@ package com.example.swipe.presentation.baseViewState
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+
 /**
  *  A data class that represents an error state for a screen in a composable UI.
  * @param message The resource ID of the string to be used for the error message.

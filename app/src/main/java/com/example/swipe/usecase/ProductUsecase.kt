@@ -1,12 +1,9 @@
 package com.example.swipe.usecase
 
-import android.util.Log
-import androidx.paging.PagingSource
 import com.example.swipe.data.repository.ProductServiceRepository
 import com.example.swipe.datamodels.AddProduct
 import com.example.swipe.datamodels.AddProductResponse
 import com.example.swipe.datamodels.ProductList
-import com.example.swipe.datamodels.ProductListItem
 import com.example.swipe.utils.ResourceState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -27,9 +24,14 @@ class ProductUseCase @Inject constructor(private val repository: ProductServiceR
             emit(ResourceState.Loading())
             val response = repository.getProductList()
             emit(ResourceState.Success(response))
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
-            emit(ResourceState.Error(message = e.localizedMessage ?: "An unexpected error occurred in fetching products list"))
+            emit(
+                ResourceState.Error(
+                    message = e.localizedMessage
+                        ?: "An unexpected error occurred in fetching products list"
+                )
+            )
         }
     }
 

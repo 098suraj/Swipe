@@ -122,7 +122,11 @@ fun AddProductBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        properties = ModalBottomSheetProperties(securePolicy = SecureFlagPolicy.SecureOff, isFocusable = true, shouldDismissOnBackPress = true),
+        properties = ModalBottomSheetProperties(
+            securePolicy = SecureFlagPolicy.SecureOff,
+            isFocusable = true,
+            shouldDismissOnBackPress = true
+        ),
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
         scrimColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.3f),
@@ -290,10 +294,14 @@ fun AddProductBottomSheet(
                     }
                     Button(
                         onClick = {
-                            if (state.isSubmitButtonEnabled){
+                            if (state.isSubmitButtonEnabled) {
                                 viewModel.onSubmitClicked()
                             } else {
-                                Toast.makeText(context, "Please fill all details!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Please fill all details!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         },
                         modifier = Modifier

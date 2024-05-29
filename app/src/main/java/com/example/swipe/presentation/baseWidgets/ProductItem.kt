@@ -62,7 +62,11 @@ import kotlin.math.min
  * @param onClick Lambda function to be executed when the product item is clicked.
  */
 @Composable
-fun ProductItem(modifier: Modifier = Modifier, productListItem: ProductListItem, onClick:()->Unit) {
+fun ProductItem(
+    modifier: Modifier = Modifier,
+    productListItem: ProductListItem,
+    onClick: () -> Unit
+) {
     val imageLink = remember {
         productListItem.image.ifBlank { R.drawable.placeholder }
     }
@@ -98,10 +102,12 @@ fun ProductItem(modifier: Modifier = Modifier, productListItem: ProductListItem,
             )
 
             if (state is AsyncImagePainter.State.Loading) {
-                Box(modifier = Modifier
-                    .requiredHeightIn(min = 200.dp)
-                    .requiredWidthIn(min = 80.dp)
-                    .fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .requiredHeightIn(min = 200.dp)
+                        .requiredWidthIn(min = 80.dp)
+                        .fillMaxSize()
+                ) {
                     LoadingAnimation(
                         Modifier
                             .align(Alignment.Center)
@@ -146,7 +152,9 @@ fun ProductItem(modifier: Modifier = Modifier, productListItem: ProductListItem,
                         contentScale = ContentScale.Crop
                     )
                     Text(
-                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 10.dp),
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 10.dp),
                         textAlign = TextAlign.Center,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -211,14 +219,14 @@ fun SharedTransitionScope.ProductItemDetails(
                         .background(Color.White, shapeForSharedElement)
                         .clip(shapeForSharedElement)
                 ) {
-                   ProductItemDetailsContent(
-                       modifier = Modifier.sharedElement(
-                           state = rememberSharedContentState(key = "${targetProduct.key}--item"),
-                           animatedVisibilityScope = this@AnimatedContent,
-                       ),
-                       productListItem = targetProduct,
-                       onConfirmClick = onConfirmClick
-                   )
+                    ProductItemDetailsContent(
+                        modifier = Modifier.sharedElement(
+                            state = rememberSharedContentState(key = "${targetProduct.key}--item"),
+                            animatedVisibilityScope = this@AnimatedContent,
+                        ),
+                        productListItem = targetProduct,
+                        onConfirmClick = onConfirmClick
+                    )
                 }
             }
         }
@@ -259,9 +267,11 @@ fun ProductItemDetailsContent(
         )
     ) {
         if (imagePainterState.state is AsyncImagePainter.State.Loading) {
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(20f / 9f)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(20f / 9f)
+            ) {
                 LoadingAnimation(
                     Modifier
                         .align(Alignment.Center)

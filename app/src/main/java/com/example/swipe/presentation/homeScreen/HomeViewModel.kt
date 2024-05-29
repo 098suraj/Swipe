@@ -26,7 +26,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(useCase: ProductUseCase) : ViewModel() {
     // Paging source for fetching paginated product list data
 
-    private val invalidatingPagingSourceFactory = InvalidatingPagingSourceFactory{
+    private val invalidatingPagingSourceFactory = InvalidatingPagingSourceFactory {
         useCase.fetchPaginatedProductListPagingSource()
     }
 
@@ -48,7 +48,7 @@ class HomeViewModel @Inject constructor(useCase: ProductUseCase) : ViewModel() {
     /**
      * Invalidates the data source, triggering a reload of data.
      */
-    fun invalidateData(){
+    fun invalidateData() {
         invalidatingPagingSourceFactory.invalidate()
     }
 }
