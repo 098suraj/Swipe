@@ -2,6 +2,7 @@ package com.example.swipe.presentation.searchScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -35,6 +36,7 @@ fun SearchScreen(
         modifier = modifier,
         topBar = {
             SearchWidgetTopBar(
+                modifier = Modifier.fillMaxWidth(),
                 onTextChange = {
                     searchViewModel.searchItem(query = it)
                 },
@@ -52,6 +54,18 @@ fun SearchScreen(
     }
 
 }
+
+
+/**
+ * Composable function for hosting the content of the search screen based on the provided UI state.
+ *
+ * This function serves as a host for displaying the content of the search screen based on the provided
+ * UI state, which includes loading state, success state, and error state. It dynamically renders loading
+ * animations, product grid, or error screens based on the provided UI state.
+ *
+ * @param modifier The modifier for the content host layout. Defaults to [Modifier].
+ * @param uiState The screen state representing the UI state of the [SearchScreenState].
+ */
 
 @Composable
 fun SearchScreenContentHost(

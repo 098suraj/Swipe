@@ -28,6 +28,11 @@ class AddProductViewModel @Inject constructor(private val productUsecase: Produc
     fun hideLoad () {
         setScreenState(ScreenState(isLoading = false, data = AddProductUiState()))
     }
+
+    /**
+     *  Handles drop down menu dismiss state of Product value.
+     *  @param expanded: expanded state of drop down menu.
+     */
     fun onDismissRequest(expanded: Boolean) {
         val data = getCurrentState().data
         setScreenState(
@@ -41,76 +46,53 @@ class AddProductViewModel @Inject constructor(private val productUsecase: Produc
         validateFieldsAndEnableSubmitButton()
     }
 
+
+    /**
+     * Updates state of Product value.
+     *
+     * @param productType Product Type.
+     */
     fun selectProductItem(productType: String) {
-        val data = getCurrentState().data
-        setScreenState(
-            getCurrentState().copy(
-                isLoading = false,
-                data = data?.copy(
-                    isDropDownMenuExpanded = false,
-                    selectedProductItem = productType
-                )
-            )
-        )
-        validateFieldsAndEnableSubmitButton()
+        updateUiState { it.copy(isDropDownMenuExpanded = false, selectedProductItem = productType) }
     }
 
+    /**
+     * Updates state of product name.
+     *
+     * @param productName Product name.
+     */
     fun onProductNameChange(productName: String) {
-        val data = getCurrentState().data
-        setScreenState(
-            getCurrentState().copy(
-                isLoading = false,
-                data = data?.copy(
-                    isDropDownMenuExpanded = false,
-                    productName = productName
-                )
-            )
-        )
-        validateFieldsAndEnableSubmitButton()
+        updateUiState { it.copy(isDropDownMenuExpanded = false, productName = productName) }
     }
 
+    /**
+     * Updates state of price value.
+     *
+     * @param price Price value.
+     */
     fun onPriceChange(price: String) {
-        val data = getCurrentState().data
-        setScreenState(
-            getCurrentState().copy(
-                isLoading = false,
-                data = data?.copy(
-                    isDropDownMenuExpanded = false,
-                    price = price
-                )
-            )
-        )
-        validateFieldsAndEnableSubmitButton()
+        updateUiState { it.copy(isDropDownMenuExpanded = false, price = price) }
     }
 
+    /**
+     * Updates state of tax value.
+     *
+     * @param tax Tax value.
+     */
     fun onTaxChange(tax: String) {
-        val data = getCurrentState().data
-        setScreenState(
-            getCurrentState().copy(
-                isLoading = false,
-                data = data?.copy(
-                    isDropDownMenuExpanded = false,
-                    tax = tax
-                )
-            )
-        )
-        validateFieldsAndEnableSubmitButton()
+        updateUiState { it.copy(isDropDownMenuExpanded = false, tax = tax) }
     }
 
-    fun onImageSelected(files: File?, imageUri: Uri?){
-        val data = getCurrentState().data
-        setScreenState(
-            getCurrentState().copy(
-                isLoading = false,
-                data = data?.copy(
-                    isDropDownMenuExpanded = false,
-                    files = files,
-                    imageUri = imageUri
-                )
-            )
-        )
-        validateFieldsAndEnableSubmitButton()
+    /**
+     * Updates state of selected image.
+     *
+     * @param files The image file to be uploaded.
+     * @param imageUri Image URI to be displayed.
+     */
+    fun onImageSelected(files: File?, imageUri: Uri?) {
+        updateUiState { it.copy(isDropDownMenuExpanded = false, files = files, imageUri = imageUri) }
     }
+
 
     /**
      * Validates all the field and enables submit button.
@@ -157,17 +139,47 @@ class AddProductViewModel @Inject constructor(private val productUsecase: Produc
         }
     }
 
+    /**
+     * Helper function to update UI state.
+     *
+     * @param transform Function to transform the current UI state.
+     */
+    private fun updateUiState(transform: (AddProductUiState) -> AddProductUiState) {
+        val data = getCurrentState().data
+        setScreenState(getCurrentState().copy(data = data?.let(transform)))
+        validateFieldsAndEnableSubmitButton()
+    }
+    /**
+     * initial screen state
+     */
     override fun getInitialState(): ScreenState<AddProductUiState> {
         return ScreenState(isLoading=true, error=null, data= AddProductUiState())
 
     }
 
+    /**
+     * set screen state to null when vm is cleared.
+     */
     override fun onCleared() {
         super.onCleared()
         setScreenState(getCurrentState().copy(isLoading = true, data = null))
     }
 }
 
+
+/**
+ * Represents the UI state for the Add Product screen.
+ *
+ * @property dismissSheet Indicates whether the bottom sheet should be dismissed.
+ * @property isSubmitButtonEnabled Indicates whether the submit button is enabled.
+ * @property selectedProductItem The currently selected product type from the dropdown menu.
+ * @property productName The name of the product entered by the user.
+ * @property price The price of the product entered by the user as a string.
+ * @property tax The tax amount for the product entered by the user as a string.
+ * @property files An optional file associated with the product.
+ * @property isDropDownMenuExpanded Indicates whether the dropdown menu for product types is expanded.
+ * @property imageUri An optional URI pointing to the image associated with the product.
+ */
 data class AddProductUiState(
     val dismissSheet:Boolean = false,
     val isSubmitButtonEnabled: Boolean = false,

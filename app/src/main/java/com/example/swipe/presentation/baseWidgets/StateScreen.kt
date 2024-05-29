@@ -15,6 +15,17 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberAsyncImagePainter
 
+/**
+ * Composable function for displaying a state screen with an icon, primary text, and secondary text.
+ *
+ * This function renders a state screen layout containing an icon, primary text, and secondary text.
+ * It is typically used to represent various states such as empty, error, or loading states in the UI.
+ *
+ * @param modifier The modifier for the state screen layout. Defaults to [Modifier].
+ * @param icon The drawable resource ID representing the icon to be displayed on the state screen.
+ * @param textPrimary The string resource ID representing the primary text to be displayed on the state screen.
+ * @param textSecondary The string resource ID representing the secondary text to be displayed on the state screen.
+ */
 @Composable
 fun StateScreen(
     modifier: Modifier = Modifier,

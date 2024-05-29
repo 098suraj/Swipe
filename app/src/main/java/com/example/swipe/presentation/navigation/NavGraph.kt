@@ -16,6 +16,15 @@ import com.example.swipe.presentation.searchScreen.SearchViewModel
 import com.example.swipe.ui.theme.LocalNetworkStatus
 import com.example.swipe.utils.connectionStateHelper.ProvideCurrentConnectivityStatus
 
+/**
+ * Composable function for hosting a navigation graph with swipe navigation support.
+ *
+ * This function hosts a navigation graph using Jetpack Navigation Compose library.
+ * It provides swipe navigation support and manages connectivity status using the [ProvideCurrentConnectivityStatus] composable.
+ *
+ * @param navHostController The navigation controller for navigating between destinations.
+ * @param startDestinations The starting destination of the navigation graph.
+ */
 @Composable
 fun SwipeNavHost(navHostController: NavHostController, startDestinations: NavigationDestinations) {
     ProvideCurrentConnectivityStatus {

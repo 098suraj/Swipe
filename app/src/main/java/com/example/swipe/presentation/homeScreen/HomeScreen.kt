@@ -97,6 +97,18 @@ fun HomeScreen(
     }
 }
 
+/**
+ * Composable function for hosting the content of the home screen.
+ *
+ * This function serves as a host for displaying the content of the home screen,
+ * which typically includes a grid of product items loaded from a paginated list.
+ * It also handles different loading states and displays appropriate UI components
+ * such as loading animations or empty state screens.
+ *
+ * @param modifier The modifier for the content host layout. Defaults to [Modifier].
+ * @param productPagingItem The lazy paging items representing the paginated list of product items.
+ */
+
 @Composable
 fun HomeScreenContentHost(
     modifier: Modifier = Modifier,

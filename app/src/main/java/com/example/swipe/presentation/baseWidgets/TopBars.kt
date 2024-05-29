@@ -86,6 +86,7 @@ fun HomeTopBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchWidgetTopBar(
+    modifier: Modifier =Modifier,
     onTextChange: (String) -> Unit,
     onSearchClicked: (String) -> Unit,
     onCloseClicked: () -> Unit
@@ -99,7 +100,7 @@ fun SearchWidgetTopBar(
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
         tonalElevation = 6.dp,
         shadowElevation = 0.dp,
-        modifier = Modifier
+        modifier = modifier
             .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(), start = 6.dp, end = 6.dp, bottom = 6.dp)
             .zIndex(1f)
             .width(360.dp)
