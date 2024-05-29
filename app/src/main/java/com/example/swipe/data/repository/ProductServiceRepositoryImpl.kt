@@ -17,7 +17,7 @@ import javax.inject.Inject
  * This layer can easily be swapped out with other implementation and helps in testing as well.
  */
 
-class ProductServiceRepositoryImpl @Inject constructor(val swipeProductApiService: SwipeProductApiService) : ProductServiceRepository {
+class ProductServiceRepositoryImpl @Inject constructor(private val swipeProductApiService: SwipeProductApiService) : ProductServiceRepository {
     override fun getSwipeProductListPagingSource(): PagingSource<Int, ProductListItem> {
         return SwipePagingSource(swipeProductApiService = swipeProductApiService)
     }

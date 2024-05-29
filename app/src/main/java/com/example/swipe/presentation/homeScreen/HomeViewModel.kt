@@ -23,5 +23,9 @@ class HomeViewModel @Inject constructor(useCase: ProductUseCase) : ViewModel() {
     fun getPaginatedProducts(): Flow<PagingData<ProductListItem>> {
         return pagingData
     }
+
+    fun invalidateData(){
+        pagingSource.invalidate()
+    }
 }
 

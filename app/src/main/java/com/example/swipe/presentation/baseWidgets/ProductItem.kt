@@ -1,19 +1,12 @@
 package com.example.swipe.presentation.baseWidgets
 
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.requiredHeightIn
+import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,25 +23,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
-import coil.ImageLoader
-import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
-import coil.compose.rememberAsyncImagePainter
 import coil.request.CachePolicy
 import coil.request.ImageRequest
-import coil.size.Scale
 import com.example.swipe.R
 import com.example.swipe.datamodels.ProductListItem
-import com.theapache64.rebugger.Rebugger
 import kotlin.math.min
 
 @Composable
@@ -67,7 +51,9 @@ fun ProductItem(modifier: Modifier = Modifier, productListItem: ProductListItem)
     ) {
         SubcomposeAsyncImage(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .requiredHeightIn(min = 200.dp)
+                .requiredWidthIn(min = 80.dp),
             model = ImageRequest.Builder(LocalContext.current)
                 .data(imageLink)
                 .crossfade(true)
@@ -92,27 +78,31 @@ fun ProductItem(modifier: Modifier = Modifier, productListItem: ProductListItem)
                 }
             }
             if (state is AsyncImagePainter.State.Success) {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .drawWithCache {
-                            val gradient = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = .2f)
-                                ),
-                                startY = size.height / 3,
-                                endY = size.height
-                            )
-                            onDrawWithContent {
-                                drawContent()
-                                drawRect(gradient, blendMode = BlendMode.Multiply)
-                            }
-                        }) {
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .requiredHeightIn(min = 200.dp)
+                    .requiredWidthIn(min = 80.dp)
+                    .drawWithCache {
+                        val gradient = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = .4f)
+                            ),
+                            startY = size.height / 3,
+                            endY = size.height
+                        )
+                        onDrawWithContent {
+                            drawContent()
+                            drawRect(gradient, blendMode = BlendMode.Multiply)
+                        }
+                    }
+                ) {
                     Image(
                         state.painter,
                         modifier = Modifier
                             .fillMaxSize()
+                            .requiredHeightIn(min = 200.dp)
+                            .requiredWidthIn(min = 80.dp)
                             .graphicsLayer {
                                 scaleX = (.8f + (.2f * transition))
                                 scaleY = (.8f + (.2f * transition))
@@ -135,32 +125,4 @@ fun ProductItem(modifier: Modifier = Modifier, productListItem: ProductListItem)
             }
         }
     }
-}
-
-
-@Composable
-fun LoadingAnimation(modifier: Modifier) {
-    val animation = rememberInfiniteTransition(label = "Loading Animation")
-    val progress by animation.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000),
-            repeatMode = RepeatMode.Restart,
-        ), label = "Loading Animation"
-    )
-
-    Box(
-        modifier = modifier
-            .graphicsLayer {
-                scaleX = progress
-                scaleY = progress
-                alpha = 1f - progress
-            }
-            .border(
-                5.dp,
-                color = MaterialTheme.colorScheme.tertiary,
-                shape = CircleShape
-            )
-    )
 }

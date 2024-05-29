@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.example.swipe.R
+import com.example.swipe.datamodels.ProductList
 import com.example.swipe.datamodels.ProductListItem
 import com.example.swipe.presentation.baseViewState.ScreenState
 import com.example.swipe.presentation.coreBase.ComposeBaseViewModel
@@ -16,8 +17,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(private val productUseCase: ProductUseCase) :
-    ComposeBaseViewModel<SearchScreenState, Nothing>() {
+class SearchViewModel @Inject constructor(private val productUseCase: ProductUseCase) : ComposeBaseViewModel<SearchScreenState, Nothing>() {
+
+    var productList  = mutableListOf<ProductListItem>()
     fun fetchItems() {
         viewModelScope.launch {
             productUseCase.fetchProductList().collectLatest { resourceState ->
@@ -32,6 +34,7 @@ class SearchViewModel @Inject constructor(private val productUseCase: ProductUse
 
                     is ResourceState.Success -> {
                         if (resourceState.data != null) {
+                            productList = resourceState.data
                             setScreenState(
                                 getCurrentState().copy(
                                     isLoading = false,
@@ -60,6 +63,13 @@ class SearchViewModel @Inject constructor(private val productUseCase: ProductUse
     }
 
     fun searchItem(query: String) {
+        if (query.isEmpty()){
+            setScreenState(
+                getCurrentState().copy(error = null,data = SearchScreenState.SuccessState(productList))
+            )
+            return
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             val item = getCurrentState().data is SearchScreenState.SuccessState
             if (item) {

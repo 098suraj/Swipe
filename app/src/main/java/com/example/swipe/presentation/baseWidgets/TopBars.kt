@@ -9,18 +9,24 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,11 +38,54 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.compose.dropUnlessResumed
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchWidget(
+fun HomeTopBar(
+    onSearchClicked: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior
+) {
+    val collapsed = 22
+    val expanded = 28
+
+    val isCollapsed by remember { derivedStateOf { scrollBehavior.state.collapsedFraction > 0.5 } }
+    val topAppBarTextSize by remember { derivedStateOf { (collapsed + (expanded - collapsed) * (1 - scrollBehavior.state.collapsedFraction)).sp } }
+
+    val topAppBarElementColor = if (isCollapsed) {
+        MaterialTheme.colorScheme.secondaryContainer
+    } else {
+        MaterialTheme.colorScheme.tertiaryContainer
+    }
+
+    LargeTopAppBar(
+        title = { Text(text = "Home", fontSize = topAppBarTextSize) },
+        actions = {
+            IconButton(onClick = dropUnlessResumed { onSearchClicked.invoke() }) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search Icon"
+                )
+            }
+        },
+        colors = TopAppBarDefaults.largeTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            scrolledContainerColor = MaterialTheme.colorScheme.primary,
+            navigationIconContentColor = topAppBarElementColor,
+            titleContentColor = topAppBarElementColor,
+            actionIconContentColor = topAppBarElementColor,
+        ),
+        scrollBehavior = scrollBehavior
+    )
+}
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchWidgetTopBar(
     onTextChange: (String) -> Unit,
     onSearchClicked: (String) -> Unit,
     onCloseClicked: () -> Unit
@@ -45,7 +94,7 @@ fun SearchWidget(
         mutableStateOf("")
     }
     Surface(
-        shape =  SearchBarDefaults.dockedShape,
+        shape = SearchBarDefaults.dockedShape,
         color = MaterialTheme.colorScheme.secondaryContainer,
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
         tonalElevation = 6.dp,
@@ -60,6 +109,7 @@ fun SearchWidget(
             modifier = Modifier
                 .fillMaxWidth(),
             value = text,
+            maxLines = 1,
             onValueChange = {
                 text = it
                 onTextChange(it)
@@ -75,10 +125,10 @@ fun SearchWidget(
                 IconButton(
                     modifier = Modifier
                         .alpha(alpha = 0.5f),
-                    onClick = {}
+                    onClick = onCloseClicked
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Search,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Search Icon",
                     )
                 }
@@ -87,11 +137,8 @@ fun SearchWidget(
                 IconButton(
                     modifier = Modifier,
                     onClick = {
-                        if (text.isNotEmpty()) {
-                            text = ""
-                        } else {
-                            onCloseClicked()
-                        }
+                        text = ""
+                        onTextChange("")
                     }
                 ) {
                     Icon(
@@ -126,10 +173,11 @@ fun SearchWidget(
     }
 }
 
+
 @Composable
 @Preview
 fun SearchWidgetPreview() {
-    SearchWidget(
+    SearchWidgetTopBar(
         onTextChange = {},
         onSearchClicked = {},
         onCloseClicked = {}

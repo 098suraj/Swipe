@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.swipe"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -54,22 +54,30 @@ android {
 }
 
 dependencies {
+
+    // core
     implementation(libs.appcompat)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
+    implementation (libs.material)
+
+    implementation ("com.github.ParthLotia:FilePicker:1.0.8")
+
+
+    // compose related
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation (libs.androidx.constraintlayout.compose)
+    debugImplementation(libs.androidx.ui.tooling)
+
+    // testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    implementation (libs.androidx.constraintlayout.compose)
-    implementation (libs.material)
+
 
 
     // Architectural Components
@@ -101,11 +109,6 @@ dependencies {
     implementation(libs.androidx.paging.runtime)
     implementation (libs.androidx.paging.compose)
 
-    // lottie
-    implementation(libs.lottie.compose)
-
-
     implementation(libs.coil.compose)
-
-    implementation(libs.rebugger)
+    debugImplementation(libs.rebugger)
 }
