@@ -5,8 +5,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,17 +17,18 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -40,6 +39,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -49,7 +49,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,12 +56,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.SecureFlagPolicy
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.DataSource
 import coil.compose.rememberAsyncImagePainter
 import com.example.swipe.R
 import com.example.swipe.datamodels.productTypeList
@@ -77,12 +78,11 @@ fun AddProductBottomSheet(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit,
     invalidatedCallback: () -> Unit,
-    sheetState: SheetState = rememberModalBottomSheetState(confirmValueChange = { it == SheetValue.PartiallyExpanded}),
+    sheetState: SheetState = rememberModalBottomSheetState(confirmValueChange = { it != SheetValue.PartiallyExpanded }),
     viewModel: AddProductViewModel = hiltViewModel()
 ) {
     // coroutine scope for suspending sheet related state task
     val coroutineScope = rememberCoroutineScope()
-
     BackHandler(sheetState.isVisible) {
         coroutineScope.launch { sheetState.hide() }
     }
@@ -122,11 +122,14 @@ fun AddProductBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
+        properties = ModalBottomSheetProperties(securePolicy = SecureFlagPolicy.SecureOff, isFocusable = true, shouldDismissOnBackPress = true),
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
-        scrimColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        scrimColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.3f),
         windowInsets = WindowInsets(0, 0, 0, 0)
     ) {
+        val focusManager = LocalFocusManager.current
+        val keyboardController = LocalSoftwareKeyboardController.current
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         if (uiState.isLoading) {
@@ -149,8 +152,8 @@ fun AddProductBottomSheet(
                 }
                 Column(
                     Modifier
-                        .navigationBarsPadding()
-                        .padding(bottom = 10.dp),
+                        .fillMaxWidth()
+                        .wrapContentSize(),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -242,6 +245,13 @@ fun AddProductBottomSheet(
                                 value = state.productName,
                                 maxLines = 1,
                                 onValueChange = viewModel::onProductNameChange,
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        focusManager.clearFocus()
+                                        keyboardController?.hide()
+                                    }
+                                ),
                                 label = { Text(text = "Product Name") },
                                 colors = colors
                             )
@@ -250,7 +260,15 @@ fun AddProductBottomSheet(
                                 maxLines = 1,
                                 onValueChange = viewModel::onPriceChange,
                                 label = { Text(text = "Product Price") },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                keyboardOptions = KeyboardOptions(
+                                    imeAction = ImeAction.Done,
+                                    keyboardType = KeyboardType.Number
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        keyboardController?.hide()
+                                    }
+                                ),
                                 colors = colors
                             )
 
@@ -258,30 +276,49 @@ fun AddProductBottomSheet(
                                 value = state.tax,
                                 maxLines = 1,
                                 onValueChange = viewModel::onTaxChange,
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                keyboardOptions = KeyboardOptions(
+                                    imeAction = ImeAction.Done,
+                                    keyboardType = KeyboardType.Number
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onDone = { keyboardController?.hide() }
+                                ),
                                 label = { Text(text = "Product tax") },
                                 colors = colors
                             )
                         }
                     }
                     Button(
-                        enabled = state.isSubmitButtonEnabled,
-                        onClick = viewModel::onSubmitClicked,
+                        onClick = {
+                            if (state.isSubmitButtonEnabled){
+                                viewModel.onSubmitClicked()
+                            } else {
+                                Toast.makeText(context, "Please fill all details!", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier
+                            .imePadding()
+                            .padding(horizontal = 12.dp)
+                            .fillMaxWidth(),
                         colors = ButtonColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(
-                                alpha = 0.7f
-                            ),
-                            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
+                            disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(
                                 alpha = 0.5f
+                            ),
+                            disabledContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(
+                                alpha = 0.3f
                             )
                         )
                     ) {
                         Text(text = "Submit")
                     }
 
-                    Spacer(modifier = Modifier.height(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()))
+                    Spacer(
+                        modifier = Modifier.height(
+                            WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                        )
+                    )
                 }
             }
         }
