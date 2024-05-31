@@ -44,7 +44,12 @@ class SearchViewModel @Inject constructor(private val productUseCase: ProductUse
                         )
 
                     is ResourceState.Loading -> setLoadingState()
-                    is ResourceState.Success -> handleSuccessState(resourceState.data)
+                    is ResourceState.Success -> {
+                        handleSuccessState(resourceState.data)
+                        resourceState.data?.let {
+                            productList = it
+                        }
+                    }
                 }
             }
         }
@@ -132,6 +137,7 @@ class SearchViewModel @Inject constructor(private val productUseCase: ProductUse
     override fun onCleared() {
         super.onCleared()
         // Reset UI state
+        productList.clear()
         setScreenState(getCurrentState().copy(isLoading = true, data = null))
     }
 

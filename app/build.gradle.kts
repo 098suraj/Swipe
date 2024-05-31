@@ -30,6 +30,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -110,5 +111,5 @@ dependencies {
     implementation (libs.androidx.paging.compose)
 
     implementation(libs.coil.compose)
-    debugImplementation(libs.rebugger)
+    implementation(libs.rebugger)
 }

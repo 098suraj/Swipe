@@ -15,17 +15,15 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,44 +37,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.compose.dropUnlessResumed
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTopBar(
     onSearchClicked: () -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior
 ) {
-    val collapsed = 22
-    val expanded = 28
-
-    val isCollapsed by remember { derivedStateOf { scrollBehavior.state.collapsedFraction > 0.5 } }
-    val topAppBarTextSize by remember { derivedStateOf { (collapsed + (expanded - collapsed) * (1 - scrollBehavior.state.collapsedFraction)).sp } }
-
-    val topAppBarElementColor = if (isCollapsed) {
-        MaterialTheme.colorScheme.secondaryContainer
-    } else {
-        MaterialTheme.colorScheme.tertiaryContainer
-    }
-
-    LargeTopAppBar(
-        title = { Text(text = "Home", fontSize = topAppBarTextSize) },
+    TopAppBar(
+        title = { Text(text = "Home", fontSize = 28.sp) },
         actions = {
-            IconButton(onClick = dropUnlessResumed { onSearchClicked.invoke() }) {
+            IconButton(onClick = remember {
+                onSearchClicked
+            }) {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search Icon"
                 )
             }
-        },
-        colors = TopAppBarDefaults.largeTopAppBarColors(
+        }, colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
             scrolledContainerColor = MaterialTheme.colorScheme.primary,
-            navigationIconContentColor = topAppBarElementColor,
-            titleContentColor = topAppBarElementColor,
-            actionIconContentColor = topAppBarElementColor,
-        ),
-        scrollBehavior = scrollBehavior
+            navigationIconContentColor = MaterialTheme.colorScheme.secondaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.secondaryContainer,
+            actionIconContentColor = MaterialTheme.colorScheme.secondaryContainer,
+        )
     )
 }
 
@@ -131,7 +115,9 @@ fun SearchWidgetTopBar(
                 IconButton(
                     modifier = Modifier
                         .alpha(alpha = 0.5f),
-                    onClick = onCloseClicked
+                    onClick = remember {
+                        onCloseClicked
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -142,9 +128,11 @@ fun SearchWidgetTopBar(
             trailingIcon = {
                 IconButton(
                     modifier = Modifier,
-                    onClick = {
-                        text = ""
-                        onTextChange("")
+                    onClick = remember {
+                        {
+                            text = ""
+                            onTextChange("")
+                        }
                     }
                 ) {
                     Icon(

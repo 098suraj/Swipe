@@ -81,43 +81,6 @@ fun AddProductBottomSheet(
     sheetState: SheetState = rememberModalBottomSheetState(confirmValueChange = { it != SheetValue.PartiallyExpanded }),
     viewModel: AddProductViewModel = hiltViewModel()
 ) {
-    // coroutine scope for suspending sheet related state task
-    val coroutineScope = rememberCoroutineScope()
-    BackHandler(sheetState.isVisible) {
-        coroutineScope.launch { sheetState.hide() }
-    }
-
-    val colors = TextFieldDefaults.colors(
-        focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-        unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
-        cursorColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        focusedIndicatorColor = Color.Transparent,
-        unfocusedIndicatorColor = Color.Transparent,
-        focusedLeadingIconColor = MaterialTheme.colorScheme.tertiary,
-        unfocusedLeadingIconColor = MaterialTheme.colorScheme.tertiary,
-        focusedTrailingIconColor = MaterialTheme.colorScheme.tertiary,
-        unfocusedTrailingIconColor = MaterialTheme.colorScheme.tertiary,
-        focusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        unfocusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
-    )
-
-    val context = LocalContext.current
-    val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
-        onResult = { uri ->
-            if (uri != null) {
-                val file = FileUriUtils.getRealPath(context, uri)?.let { File(it) }
-                if (FileUriUtils.checkExtensionFile(file)) {
-                    viewModel.onImageSelected(files = file, imageUri = uri)
-                }
-            } else {
-                Toast.makeText(context, "No Item Selected", Toast.LENGTH_SHORT).show()
-            }
-        }
-    )
-    LaunchedEffect(key1 = Unit) {
-        viewModel.hideLoad()
-    }
     ModalBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
@@ -132,6 +95,45 @@ fun AddProductBottomSheet(
         scrimColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.3f),
         windowInsets = WindowInsets(0, 0, 0, 0)
     ) {
+        val colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
+            cursorColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.tertiary,
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.tertiary,
+            focusedTrailingIconColor = MaterialTheme.colorScheme.tertiary,
+            unfocusedTrailingIconColor = MaterialTheme.colorScheme.tertiary,
+            focusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        )
+
+        val context = LocalContext.current
+        val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.OpenDocument(),
+            onResult = { uri ->
+                if (uri != null) {
+                    val file = FileUriUtils.getRealPath(context, uri)?.let { File(it) }
+                    if (FileUriUtils.checkExtensionFile(file)) {
+                        viewModel.onImageSelected(files = file, imageUri = uri)
+                    }
+                } else {
+                    Toast.makeText(context, "No Item Selected", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
+        LaunchedEffect(key1 = Unit) {
+            viewModel.hideLoad()
+        }
+        val coroutineScope = rememberCoroutineScope()
+        BackHandler(sheetState.isVisible) {
+            coroutineScope.launch {
+                onDismissRequest()
+                sheetState.hide()
+            }
+        }
+
         val focusManager = LocalFocusManager.current
         val keyboardController = LocalSoftwareKeyboardController.current
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -151,6 +153,7 @@ fun AddProductBottomSheet(
                     if (state.dismissSheet) {
                         invalidatedCallback()
                         Toast.makeText(context, "Item Added", Toast.LENGTH_SHORT).show()
+                        onDismissRequest()
                         sheetState.hide()
                     }
                 }

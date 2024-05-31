@@ -45,11 +45,5 @@ class HomeViewModel @Inject constructor(useCase: ProductUseCase) : ViewModel() {
         return pagingData
     }
 
-    /**
-     * Invalidates the data source, triggering a reload of data.
-     */
-    fun invalidateData() {
-        invalidatingPagingSourceFactory.invalidate()
-    }
 }
 

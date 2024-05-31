@@ -12,15 +12,14 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -45,19 +44,21 @@ fun HomeScreen(
     navHostController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var showBottomSheet by remember {
         mutableStateOf(false)
     }
+    val productPagingItem = viewModel.getPaginatedProducts().collectAsLazyPagingItems()
+
     BaseScaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier,
         topBar = {
             HomeTopBar(
-                scrollBehavior = scrollBehavior,
                 onSearchClicked = dropUnlessResumed {
                     navHostController.navigate(
                         NavigationDestinations.SearchScreen.route
-                    )
+                    ){
+                        launchSingleTop = true
+                    }
                 }
             )
         },
@@ -75,10 +76,9 @@ fun HomeScreen(
                 )
             }
         },
-        floatingActionButtonPosition = FabPosition.End
+        floatingActionButtonPosition = remember { FabPosition.End }
     )
     { innerPadding ->
-        val productPagingItem = viewModel.getPaginatedProducts().collectAsLazyPagingItems()
         HomeScreenContentHost(
             modifier = Modifier.padding(innerPadding),
             productPagingItem = productPagingItem
@@ -91,7 +91,7 @@ fun HomeScreen(
                     .padding(bottom = 30.dp),
                 onDismissRequest = { showBottomSheet = false },
                 invalidatedCallback = {
-                    viewModel.invalidateData()
+                    productPagingItem.refresh()
                 }
             )
         }
